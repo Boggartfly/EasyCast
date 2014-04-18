@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">OpenAirplay</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello">Hello world!</string>
+	<string name="search_lan">Search LAN</string>
+    <string name="switch_router">Network On/Off</string>
+    <string name="toggle_debug_logging">Toggle debug logging</string>
+
+    <string name="searching_lan">Searching LAN for UPnP devices...</string>
+    <string name="enabling_router">Enabling network router...</string>
+    <string name="disabling_router">Disabling network router...</string>
+    <string name="enabling_debug_logging">Enabling debug logging...</string>
+    <string name="disabling_debug_logging">Disabling debug logging...</string>
+
+    <string name="registering_demo_device">Registering UPnP demo device...</string>
+    <string name="create_demo_failed">Creating of demo device failed, check the log!</string>
+</resources>

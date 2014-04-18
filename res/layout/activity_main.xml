@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".MainActivity"
+    >
+    
+<android.support.v4.widget.SlidingPaneLayout 
+    
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/slidingpanelayout" >
+
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+   
+       <fragment android:layout_width="fill_parent"
+             	  android:layout_height="wrap_content" 
+             	  android:name="code.laerstudios.openairplay.FirstPane" 
+             	  android:id="@+id/fragment_firstpane" />
+  
+        
+         
+     </LinearLayout>    
+        
+                
+      
+          <fragment android:layout_width="fill_parent"
+            	  android:layout_height="wrap_content" 
+            	  android:name="code.laerstudios.openairplay.SecondPane" 
+            	  android:id="@+id/fragment_secondpane"/>
+            	  
+            	  
+  	        
+                  
+     
+        
+        
+</android.support.v4.widget.SlidingPaneLayout>
+
+</RelativeLayout>
