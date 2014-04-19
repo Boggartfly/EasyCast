@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Parth Sane
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package code.laerstudios.openairplay;
 
 import java.util.Comparator;
@@ -25,11 +41,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
-public class FirstPane extends Fragment {
+public class FirstPane extends ListFragment {
 	private ArrayAdapter<DeviceDisplay> listAdapter;
 
     private BrowseRegistryListener registryListener = new BrowseRegistryListener();
-
+    ViewGroup myViewGroup;
     private AndroidUpnpService upnpService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -57,18 +73,21 @@ public class FirstPane extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = new View(getActivity());
+        View root = new View(getActivity());
         root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root= inflater.inflate(R.layout.firstlayout,container,false);
         root.setBackgroundColor(Color.GRAY);
         setHasOptionsMenu(true);
+        myViewGroup=container;
         
         listAdapter =
                 new ArrayAdapter<code.laerstudios.openairplay.FirstPane.DeviceDisplay>(
-                    inflater.getContext(),
-                    android.R.layout.simple_list_item_1
+                    inflater.getContext()
+                    , android.R.layout.list_content
                 );
         
-            //setListAdapter(listAdapter);
+            setListAdapter(listAdapter);
+        
 
         
         return root;
@@ -78,6 +97,9 @@ public class FirstPane extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
        //inflater.inflate(R.menu.base_menu, menu);
+    }
+    public void OnActivityCreated(Bundle savedInstanceState){
+    	
     }
     @Override
     public void onStart() {
@@ -103,7 +125,7 @@ public class FirstPane extends Fragment {
     protected class BrowseRegistryListener extends DefaultRegistryListener {
 
         /* Discovery performance optimization for very slow Android devices! */
-    	BrowseActivity x;
+    	
         @Override
         public void remoteDeviceDiscoveryStarted(Registry registry, RemoteDevice device) {
             deviceAdded(device);

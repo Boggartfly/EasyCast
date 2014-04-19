@@ -1,43 +1,41 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ * Copyright 2014 Parth Sane
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ 
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity"
-    >
-    
-<android.support.v4.widget.SlidingPaneLayout 
-    
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/slidingpanelayout" >
+    tools:context=".MainActivity" >
 
-   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical">
-   
-       <fragment android:layout_width="fill_parent"
-             	  android:layout_height="wrap_content" 
-             	  android:name="code.laerstudios.openairplay.FirstPane" 
-             	  android:id="@+id/fragment_firstpane" />
-  
-        
-         
-     </LinearLayout>    
-        
-                
-      
-          <fragment android:layout_width="fill_parent"
-            	  android:layout_height="wrap_content" 
-            	  android:name="code.laerstudios.openairplay.SecondPane" 
-            	  android:id="@+id/fragment_secondpane"/>
-            	  
-            	  
-  	        
-                  
-     
-        
-        
-</android.support.v4.widget.SlidingPaneLayout>
+    <android.support.v4.widget.SlidingPaneLayout
+        android:id="@+id/slidingpanelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-</RelativeLayout>
+        <fragment
+            android:id="@+id/fragment_firstpane"
+            android:name="code.laerstudios.openairplay.FirstPane"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <fragment
+            android:id="@+id/fragment_secondpane"
+            android:name="code.laerstudios.openairplay.SecondPane"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SlidingPaneLayout>
+
+</FrameLayout>
