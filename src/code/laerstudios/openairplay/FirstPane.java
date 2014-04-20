@@ -25,8 +25,6 @@ import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.DefaultRegistryListener;
 import org.teleal.cling.registry.Registry;
 
-import code.laerstudios.openairplay.BrowseActivity.BrowseRegistryListener;
-import code.laerstudios.openairplay.BrowseActivity.DeviceDisplay;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,9 +32,12 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -177,8 +178,9 @@ public class FirstPane extends ListFragment {
                     }
 
                     // Sort it?
-                    // listAdapter.sort(DISPLAY_COMPARATOR);
-                    // listAdapter.notifyDataSetChanged();
+                     listAdapter.sort(DISPLAY_COMPARATOR);
+                     listAdapter.notifyDataSetChanged();
+                     Toast.makeText(getActivity(), "Device Discovered", Toast.LENGTH_SHORT).show();
                 }
             });
         }
