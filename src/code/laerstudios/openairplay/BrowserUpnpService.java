@@ -42,7 +42,7 @@ public class BrowserUpnpService extends AndroidUpnpServiceImpl {
            @Override
            public ServiceType[] getExclusiveServiceTypes() {
                return new ServiceType[] {
-                       new UDAServiceType("_airplay._tcp.local.")
+                       new UDAServiceType("")
                };
            }
 

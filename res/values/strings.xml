@@ -13,8 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- 
-  -->
+-->
 <resources>
 
     <string name="app_name">OpenAirplay</string>
@@ -30,5 +29,7 @@
     <string name="disabling_debug_logging">Disabling debug logging...</string>
     <string name="registering_demo_device">Registering UPnP demo device...</string>
     <string name="create_demo_failed">Creating of demo device failed, check the log!</string>
+    <string name="title_activity_airplay">AirplayActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

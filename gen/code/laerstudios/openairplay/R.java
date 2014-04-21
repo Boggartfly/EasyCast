@@ -28,11 +28,12 @@ public final class R {
         public static final int openairplay=0x7f020003;
     }
     public static final class id {
-        public static final int action_settings=0x7f080004;
+        public static final int action_settings=0x7f080005;
         public static final int fragment_firstpane=0x7f080001;
         public static final int fragment_secondpane=0x7f080002;
+        public static final int icon=0x7f080003;
         public static final int slidingpanelayout=0x7f080000;
-        public static final int text=0x7f080003;
+        public static final int text=0x7f080004;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -40,7 +41,8 @@ public final class R {
         public static final int main=0x7f030002;
     }
     public static final class menu {
-        public static final int main=0x7f070000;
+        public static final int airplay=0x7f070000;
+        public static final int main=0x7f070001;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
@@ -51,10 +53,12 @@ public final class R {
         public static final int enabling_debug_logging=0x7f050009;
         public static final int enabling_router=0x7f050007;
         public static final int hello=0x7f050002;
+        public static final int hello_world=0x7f05000e;
         public static final int registering_demo_device=0x7f05000b;
         public static final int search_lan=0x7f050003;
         public static final int searching_lan=0x7f050006;
         public static final int switch_router=0x7f050004;
+        public static final int title_activity_airplay=0x7f05000d;
         public static final int toggle_debug_logging=0x7f050005;
     }
     public static final class style {
