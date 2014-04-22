@@ -46,7 +46,7 @@ public class MainActivity extends FragmentActivity {
 	private String type = "_airplay._tcp.local.";
     private JmDNS jmdns = null;
     private ServiceListener listener = null;
-    private ServiceInfo serviceInfo;
+    //private ServiceInfo serviceInfo;
     android.net.wifi.WifiManager.MulticastLock lock;
     android.os.Handler handler = new android.os.Handler();
     final static String TAG="Open Airplay";
@@ -120,33 +120,35 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
-    protected void onDestroy() {
-		if (jmdns != null) {
-            if (listener != null) {
-                jmdns.removeServiceListener(type, listener);
-                listener = null;
-            }
-            jmdns.unregisterAllServices();
-            try {
-                jmdns.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            jmdns = null;
-    	}
-    	//repo.stop();
-        //s.stop();
-        lock.release();
-		super.onDestroy();
-       
+    protected void onStop() {
+	if (jmdns != null) {
+        if (listener != null) {
+            jmdns.removeServiceListener(type, listener);
+            listener = null;
+        }
+        jmdns.unregisterAllServices();
+        try {
+            jmdns.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        jmdns = null;
+	}
+	//repo.stop();
+    //s.stop();
+    lock.release();
+	super.onStop();
 }
+
+	
+	
 	 private class DeviceSearch extends AsyncTask<Void,Void,Void> {
+		
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			// TODO Auto-generated method stub
-			// TODO Auto-generated method stub
+			
 			android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager)getSystemService(android.content.Context.WIFI_SERVICE);
 	        lock = wifi.createMulticastLock("mylockthereturn");
 	        lock.setReferenceCounted(true);
@@ -157,12 +159,12 @@ public class MainActivity extends FragmentActivity {
 
 	                @Override
 	                public void serviceResolved(ServiceEvent ev) {
-	                    //notifyUser("Service resolved: " + ev.getInfo().getQualifiedName() + " port:" + ev.getInfo().getPort());
+	                    notifyUser("Service resolved: " + ev.getInfo().getQualifiedName() + " port:" + ev.getInfo().getPort());
 	                }
 
 	                @Override
 	                public void serviceRemoved(ServiceEvent ev) {
-	                  //  notifyUser("Service removed: " + ev.getName());
+	                  notifyUser("Service removed: " + ev.getName());
 	                }
 
 	                @Override
@@ -171,8 +173,8 @@ public class MainActivity extends FragmentActivity {
 	                    jmdns.requestServiceInfo(event.getType(), event.getName(), 1);
 	                }
 	            });
-	            serviceInfo = ServiceInfo.create("_test._tcp.local.", "AndroidTest", 0, "plain test service from android");
-	            jmdns.registerService(serviceInfo);
+	          //  serviceInfo = ServiceInfo.create("_test._tcp.local.", "AndroidTest", 0, "plain test service from android");
+	            //jmdns.registerService(serviceInfo);
 	            Log.i(TAG," Service Discovery Started");
 	        } catch (IOException e) {
 	            e.printStackTrace();
@@ -180,21 +182,22 @@ public class MainActivity extends FragmentActivity {
 	        }
 			
 			return null;
-		}{
+		}
         
 			
-		}
+		 private void notifyUser(final String msg) {
+		        handler.postDelayed(new Runnable() {
+		            public void run() {
+		            	Toast.makeText(getApplicationContext(), "Apple TV Found!  "+msg, Toast.LENGTH_LONG).show();
+		      /*  TextView t = (TextView)findViewById(R.id.text);
+		        t.setText(msg+"\n=== "+t.getText());
+		        */}
+		            }, 1);
+		
+		    	
+		    	Log.i(TAG," Apple TV Found!");
+			 }
 }
 }
-		 /*private void notifyUser(final String msg) {
-	    	        handler.postDelayed(new Runnable() {
-	    	            public void run() {
-
-	    	        TextView t = (TextView)findViewById(R.id.text);
-	    	        t.setText(msg+"\n=== "+t.getText());}
-	    	            }, 1);
-	    	
-	    	    	Toast.makeText(getApplicationContext(), "Apple TV Found!", Toast.LENGTH_SHORT).show();
-	    	    	Log.i(TAG," Apple TV Found!");
-	    */	
+		 
 

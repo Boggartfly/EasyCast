@@ -18,30 +18,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <include layout="@android:layout/list_content" />
-
-    <ListView
-        android:id="@id/android:list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="#00FF00"
-        android:drawSelectorOnTop="false" />
-
-    <TextView
-        android:id="@id/android:empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FF0000"
-        android:text="No data" />
      <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="6dip"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_launcher" />
+         android:id="@+id/applelogo"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentTop="true"
+         android:contentDescription="TODO"
+         android:src="@drawable/applelogo" />
+
+     <TextView
+         android:id="@+id/textView1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBottom="@+id/applelogo"
+         android:layout_centerHorizontal="true"
+         android:layout_marginBottom="26dp"
+         android:text="Apple TV"
+         android:textSize="20dp" />
 
 </RelativeLayout>

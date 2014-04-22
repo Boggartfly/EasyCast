@@ -20,7 +20,7 @@ package code.laerstudios.openairplay;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +31,7 @@ import android.view.ViewGroup;
 
 
 
-public class FirstPane extends ListFragment {
+public class FirstPane extends Fragment {
 	
     ViewGroup myViewGroup;
     
