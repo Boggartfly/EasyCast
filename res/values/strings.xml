@@ -31,5 +31,6 @@
     <string name="create_demo_failed">Creating of demo device failed, check the log!</string>
     <string name="title_activity_airplay">AirplayActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="select_a_media_item">Select a media item</string>
 
 </resources>

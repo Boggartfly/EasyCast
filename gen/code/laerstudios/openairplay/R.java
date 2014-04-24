@@ -29,10 +29,12 @@ public final class R {
         public static final int openairplay=0x7f020004;
     }
     public static final class id {
-        public static final int action_settings=0x7f080006;
+        public static final int action_settings=0x7f080008;
         public static final int applelogo=0x7f080003;
         public static final int fragment_firstpane=0x7f080001;
         public static final int fragment_secondpane=0x7f080002;
+        public static final int gridView1=0x7f080006;
+        public static final int progressBar1=0x7f080007;
         public static final int slidingpanelayout=0x7f080000;
         public static final int text=0x7f080005;
         public static final int textView1=0x7f080004;
@@ -41,6 +43,7 @@ public final class R {
         public static final int activity_main=0x7f030000;
         public static final int firstlayout=0x7f030001;
         public static final int main=0x7f030002;
+        public static final int secondlayout=0x7f030003;
     }
     public static final class menu {
         public static final int airplay=0x7f070000;
@@ -59,6 +62,7 @@ public final class R {
         public static final int registering_demo_device=0x7f05000b;
         public static final int search_lan=0x7f050003;
         public static final int searching_lan=0x7f050006;
+        public static final int select_a_media_item=0x7f05000f;
         public static final int switch_router=0x7f050004;
         public static final int title_activity_airplay=0x7f05000d;
         public static final int toggle_debug_logging=0x7f050005;

@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
 import android.os.AsyncTask;
@@ -32,7 +31,7 @@ import android.support.v4.widget.SlidingPaneLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -50,7 +49,9 @@ public class MainActivity extends FragmentActivity {
     android.net.wifi.WifiManager.MulticastLock lock;
     android.os.Handler handler = new android.os.Handler();
     final static String TAG="Open Airplay";
+    boolean isfound=false;
 	
+	public ProgressBar spinner;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -97,7 +98,14 @@ public class MainActivity extends FragmentActivity {
             	new DeviceSearch().execute();  
             }
             }, 1000);
-
+        android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager)getSystemService(android.content.Context.WIFI_SERVICE);
+        lock = wifi.createMulticastLock("Airlock");
+        lock.setReferenceCounted(false);
+        lock.acquire();
+        
+		
+		
+		
     }    /** Called when the activity is first created. */
        
 
@@ -120,6 +128,27 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+    protected void onDestroy() {
+	if (jmdns != null) {
+        if (listener != null) {
+            jmdns.removeServiceListener(type, listener);
+            listener = null;
+        }
+        jmdns.unregisterAllServices();
+        try {
+            jmdns.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        jmdns = null;
+	}
+	
+    lock.release();
+    Log.i(TAG,"Lock Released");
+	super.onStop();
+}
+	@Override
     protected void onStop() {
 	if (jmdns != null) {
         if (listener != null) {
@@ -135,24 +164,54 @@ public class MainActivity extends FragmentActivity {
         }
         jmdns = null;
 	}
-	//repo.stop();
-    //s.stop();
+	
     lock.release();
+    Log.i(TAG,"Lock Released");
 	super.onStop();
 }
-
 	
+	@Override
+    protected void onPause() {
+	if (jmdns != null) {
+        if (listener != null) {
+            jmdns.removeServiceListener(type, listener);
+            listener = null;
+        }
+        jmdns.unregisterAllServices();
+        try {
+            jmdns.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        jmdns = null;
+	}
 	
-	 private class DeviceSearch extends AsyncTask<Void,Void,Void> {
-		
+    lock.release();
+    Log.i(TAG,"Lock Released");
+	super.onStop();
+}
+	@Override
+    protected void onResume() {
+		handler.postDelayed(new Runnable() {
+            public void run() {
+            	new DeviceSearch().execute();  
+            }
+            }, 1000);
+	super.onResume();
+}
+	
+	 private class DeviceSearch extends AsyncTask<Void,Void,Integer> {
+		 @Override
+		    protected void onPreExecute() {
+			 spinner = (ProgressBar)findViewById(R.id.progressBar1);
+			 spinner.setVisibility(View.VISIBLE);  
+		    }
 
 		@Override
-		protected Void doInBackground(Void... arg0) {
+		protected Integer doInBackground(Void... arg0) {
 			
-			android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager)getSystemService(android.content.Context.WIFI_SERVICE);
-	        lock = wifi.createMulticastLock("mylockthereturn");
-	        lock.setReferenceCounted(true);
-	        lock.acquire();
+			
 	        try {
 	            jmdns = JmDNS.create();
 	            jmdns.addServiceListener(type, listener = new ServiceListener() {
@@ -165,6 +224,7 @@ public class MainActivity extends FragmentActivity {
 	                @Override
 	                public void serviceRemoved(ServiceEvent ev) {
 	                  notifyUser("Service removed: " + ev.getName());
+	                  //spinner.setVisibility(View.VISIBLE);
 	                }
 
 	                @Override
@@ -178,11 +238,15 @@ public class MainActivity extends FragmentActivity {
 	            Log.i(TAG," Service Discovery Started");
 	        } catch (IOException e) {
 	            e.printStackTrace();
-	            return null;
+	            return 1;
 	        }
-			
-			return null;
+	        
+	        
+			return 1;
 		}
+		protected void onPostExecute(Integer result) {
+			spinner.setVisibility(View.GONE);
+        }
         
 			
 		 private void notifyUser(final String msg) {
@@ -196,6 +260,8 @@ public class MainActivity extends FragmentActivity {
 		
 		    	
 		    	Log.i(TAG," Apple TV Found!");
+		    	isfound=true;
+		    	
 			 }
 }
 }

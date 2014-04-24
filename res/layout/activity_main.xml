@@ -35,7 +35,9 @@
             android:id="@+id/fragment_secondpane"
             android:name="code.laerstudios.openairplay.SecondPane"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" >
+       
+        </fragment>
     </android.support.v4.widget.SlidingPaneLayout>
 
 </FrameLayout>
