@@ -218,12 +218,12 @@ public class MainActivity extends FragmentActivity {
 
 	                @Override
 	                public void serviceResolved(ServiceEvent ev) {
-	                    notifyUser("Service resolved: " + ev.getInfo().getQualifiedName() + " port:" + ev.getInfo().getPort());
+	                    buildURL("http://" +ev.getInfo().getHostAddress()+":"+ ev.getInfo().getPort());
 	                }
 
 	                @Override
 	                public void serviceRemoved(ServiceEvent ev) {
-	                  notifyUser("Service removed: " + ev.getName());
+	                  buildURL("Service removed: " + ev.getName());
 	                  //spinner.setVisibility(View.VISIBLE);
 	                }
 
@@ -249,10 +249,10 @@ public class MainActivity extends FragmentActivity {
         }
         
 			
-		 private void notifyUser(final String msg) {
+		 private void buildURL(final String url) {
 		        handler.postDelayed(new Runnable() {
 		            public void run() {
-		            	Toast.makeText(getApplicationContext(), "Apple TV Found!  "+msg, Toast.LENGTH_LONG).show();
+		            	Toast.makeText(getApplicationContext(), "Apple TV Found!", Toast.LENGTH_SHORT).show();
 		      /*  TextView t = (TextView)findViewById(R.id.text);
 		        t.setText(msg+"\n=== "+t.getText());
 		        */}
@@ -260,6 +260,7 @@ public class MainActivity extends FragmentActivity {
 		
 		    	
 		    	Log.i(TAG," Apple TV Found!");
+		    	Log.i(TAG," IP Address Is:"+url);
 		    	isfound=true;
 		    	
 			 }

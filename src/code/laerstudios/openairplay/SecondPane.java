@@ -15,13 +15,29 @@
  */
 package code.laerstudios.openairplay;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +51,17 @@ import android.widget.ImageView;
 
 public class SecondPane extends ListFragment  {
 	
+	protected static final String TAG = "Second Pane";
 	ViewGroup myViewGroup;
 	MainActivity obj=new MainActivity();
 	String[] projection = {MediaStore.Images.Thumbnails._ID};
 	private Cursor cursor;
 	private int columnIndex;
-	
-	   
+	public static final String NONE = "None";
+    public static final String SLIDE_LEFT = "SlideLeft";
+    public static final String SLIDE_RIGHT = "SlideRight";
+    public static final String DISSOLVE = "Dissolve";
+    
 	   
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,7 +109,16 @@ public class SecondPane extends ListFragment  {
 			
 			// Get image filename
 			String imagePath = cursor.getString(columnIndex);
-			
+			Bitmap image = BitmapFactory.decodeFile(imagePath);
+			try
+			{
+			Log.d(TAG,"Image decoded");
+			photoRaw(image,NONE);
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
 			// Use this path to do further processing, i.e. full screen display
 		}
 	});
@@ -102,8 +131,99 @@ public class SecondPane extends ListFragment  {
         return root;
     }
 
-   
+public void photoRaw(Bitmap image, String transition) throws IOException {
+		ArrayList<String> obj1 = new ArrayList<String>();
+		ArrayList<ByteArrayOutputStream> obj2 = new ArrayList<ByteArrayOutputStream>();
+		ArrayList<Map<String,String>> obj3 = new ArrayList<Map<String,String>>();
+		String put="PUT";
+		String photosl="/photo";
+		Log.i("photoraw", "photoraw called");
+		
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Apple-Transition", transition);
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		
+		 
+		
+		image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+		obj1.add(put);
+		obj1.add(photosl);
+		obj2.add(stream);
+		obj3.add(headers);
+		//new Airplay().execute(obj1,obj2,obj3);
+		
+	}
+private class Airplay extends AsyncTask<Void,Void,ArrayList<String>> {
+	 @Override
+	    protected void onPreExecute() {
+		
+	    }
+
 	
+
+	@Override
+	protected ArrayList<String> doInBackground(Void... arg0) {
+		BufferedReader reader=null;
+		 
+		try
+        { 	String data = URLEncoder.encode("name", "UTF-8");
+          
+            // Defined URL  where to send data
+            URL url = new URL("http://androidexample.com/media/webservice/httppost.php");
+             
+         // Send POST data request
+
+          URLConnection conn = url.openConnection(); 
+          conn.setDoOutput(true); 
+          OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()); 
+          wr.write( data ); 
+          wr.flush(); 
+      
+          // Get the server response 
+           
+        reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        
+        // Read Server Response
+        while((line = reader.readLine()) != null)
+            {
+                   // Append server response in string
+                   sb.append(line + "\n");
+            }
+            
+            
+           
+        }
+        catch(Exception ex)
+        {
+             
+        }
+        finally
+        {
+            try
+            {
+ 
+                reader.close();
+            }
+
+            catch(Exception ex) {}
+        }
+		return null;
+              
+        // Show response on activity
+        
+        
+    
+		
+       
+	}
+	protected void onPostExecute(Integer result) {
+		
+   }
+   
+}		
+	 
 	private class ImageAdapter extends BaseAdapter {
 	
 		 
@@ -177,4 +297,5 @@ public class SecondPane extends ListFragment  {
 		}
 		
 		}
+	
 }
