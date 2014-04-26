@@ -62,6 +62,13 @@ public class SecondPane extends ListFragment  {
     public static final String SLIDE_RIGHT = "SlideRight";
     public static final String DISSOLVE = "Dissolve";
     
+    
+    ArrayList<String> obj1 = new ArrayList<String>();
+	ArrayList<ByteArrayOutputStream> obj2 = new ArrayList<ByteArrayOutputStream>();
+	ArrayList<Map<String,String>> obj3 = new ArrayList<Map<String,String>>();
+	String put="PUT";
+	String photosl="/photo";
+	Map<String, String> headers = new HashMap<String, String>();
 	   
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,14 +139,10 @@ public class SecondPane extends ListFragment  {
     }
 
 public void photoRaw(Bitmap image, String transition) throws IOException {
-		ArrayList<String> obj1 = new ArrayList<String>();
-		ArrayList<ByteArrayOutputStream> obj2 = new ArrayList<ByteArrayOutputStream>();
-		ArrayList<Map<String,String>> obj3 = new ArrayList<Map<String,String>>();
-		String put="PUT";
-		String photosl="/photo";
+		
 		Log.i("photoraw", "photoraw called");
 		
-		Map<String, String> headers = new HashMap<String, String>();
+		
 		headers.put("X-Apple-Transition", transition);
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		
@@ -150,10 +153,10 @@ public void photoRaw(Bitmap image, String transition) throws IOException {
 		obj1.add(photosl);
 		obj2.add(stream);
 		obj3.add(headers);
-		//new Airplay().execute(obj1,obj2,obj3);
+		new PhotoAirplay().execute();
 		
 	}
-private class Airplay extends AsyncTask<Void,Void,ArrayList<String>> {
+private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
 	 @Override
 	    protected void onPreExecute() {
 		
@@ -162,14 +165,14 @@ private class Airplay extends AsyncTask<Void,Void,ArrayList<String>> {
 	
 
 	@Override
-	protected ArrayList<String> doInBackground(Void... arg0) {
+	protected Void doInBackground(Void... arg0) {
 		BufferedReader reader=null;
 		 
 		try
         { 	String data = URLEncoder.encode("name", "UTF-8");
           
             // Defined URL  where to send data
-            URL url = new URL("http://androidexample.com/media/webservice/httppost.php");
+            URL url = new URL(obj.Url);
              
          // Send POST data request
 
@@ -210,6 +213,7 @@ private class Airplay extends AsyncTask<Void,Void,ArrayList<String>> {
             catch(Exception ex) {}
         }
 		return null;
+		
               
         // Show response on activity
         
@@ -218,9 +222,7 @@ private class Airplay extends AsyncTask<Void,Void,ArrayList<String>> {
 		
        
 	}
-	protected void onPostExecute(Integer result) {
-		
-   }
+	
    
 }		
 	 

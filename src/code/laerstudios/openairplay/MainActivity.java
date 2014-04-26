@@ -50,7 +50,7 @@ public class MainActivity extends FragmentActivity {
     android.os.Handler handler = new android.os.Handler();
     final static String TAG="Open Airplay";
     boolean isfound=false;
-	
+	String Url;
 	public ProgressBar spinner;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -262,7 +262,7 @@ public class MainActivity extends FragmentActivity {
 		    	Log.i(TAG," Apple TV Found!");
 		    	Log.i(TAG," IP Address Is:"+url);
 		    	isfound=true;
-		    	
+		    	Url=url;
 			 }
 }
 }
