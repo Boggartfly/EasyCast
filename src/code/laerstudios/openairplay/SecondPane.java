@@ -15,14 +15,10 @@
  */
 package code.laerstudios.openairplay;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +57,7 @@ public class SecondPane extends ListFragment  {
     public static final String SLIDE_LEFT = "SlideLeft";
     public static final String SLIDE_RIGHT = "SlideRight";
     public static final String DISSOLVE = "Dissolve";
-    
+    public byte[] data;
     
     ArrayList<String> obj1 = new ArrayList<String>();
 	ArrayList<ByteArrayOutputStream> obj2 = new ArrayList<ByteArrayOutputStream>();
@@ -166,40 +162,54 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
-		BufferedReader reader=null;
-		 
+		//BufferedReader reader=null;
+		ByteArrayOutputStream wr = new ByteArrayOutputStream(); 
 		try
-        { 	String data = URLEncoder.encode("name", "UTF-8");
-          
+        { 	//String data = URLEncoder.encode("name", "UTF-8");
+        	
             // Defined URL  where to send data
-            URL url = new URL(obj.Url);
-             
-         // Send POST data request
+            URL url = new URL("http://192.168.1.101:7000"+photosl);
+             Log.i("Whats the URL","http://192.168.1.101:7000"+photosl);
+         // Send PUT data request
 
-          URLConnection conn = url.openConnection(); 
-          conn.setDoOutput(true); 
-          OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()); 
-          wr.write( data ); 
+          HttpURLConnection conn =(HttpURLConnection) url.openConnection(); 
+          conn.setDoOutput(true);
+          conn.setUseCaches(false);
+          conn.setRequestMethod(put);
+          conn.setRequestProperty("User-Agent","MediaControl/1.0");
+          Object[] keys = headers.keySet().toArray();
+          for (int i = 0; i < keys.length; i++) {
+                  conn.setRequestProperty((String) keys[i],(String) headers.get(keys[i]));
+          }
+          if(wr!=null)
+          {
+        	  data = wr.toByteArray();
+          }
+          
+          conn.setRequestProperty("Content-Length",""+data.length);
+          conn.connect();
+          wr.writeTo(conn.getOutputStream()); 
           wr.flush(); 
       
           // Get the server response 
            
-        reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
+       // reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+       // StringBuilder sb = new StringBuilder();
+        //String line = null;
         
         // Read Server Response
-        while((line = reader.readLine()) != null)
+       /* while((line = reader.readLine()) != null)
             {
                    // Append server response in string
                    sb.append(line + "\n");
             }
             
-            
+           */ 
            
         }
-        catch(Exception ex)
+        catch(IOException ex)
         {
+        	ex.printStackTrace();
              
         }
         finally
@@ -207,10 +217,13 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
             try
             {
  
-                reader.close();
+                //reader.close();
+            	wr.close();
             }
 
-            catch(Exception ex) {}
+            catch(IOException ex) {
+            	ex.printStackTrace();
+            }
         }
 		return null;
 		
