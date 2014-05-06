@@ -216,7 +216,8 @@ public class MainActivity extends FragmentActivity {
 	            jmdns = JmDNS.create();
 	            jmdns.addServiceListener(type, listener = new ServiceListener() {
 
-	                @Override
+	                @SuppressWarnings("deprecation")
+					@Override
 	                public void serviceResolved(ServiceEvent ev) {
 	                    buildURL("http://" +ev.getInfo().getHostAddress()+":"+ ev.getInfo().getPort());
 	                }

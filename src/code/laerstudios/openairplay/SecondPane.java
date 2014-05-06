@@ -15,8 +15,11 @@
  */
 package code.laerstudios.openairplay;
 
+//import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -65,7 +68,8 @@ public class SecondPane extends ListFragment  {
 	String put="PUT";
 	String photosl="/photo";
 	Map<String, String> headers = new HashMap<String, String>();
-	   
+	ByteArrayOutputStream wr = new ByteArrayOutputStream(); 
+	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = new View(getActivity());
@@ -140,14 +144,14 @@ public void photoRaw(Bitmap image, String transition) throws IOException {
 		
 		
 		headers.put("X-Apple-Transition", transition);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		
-		 
 		
-		image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+		 //NEED TO CHECK CODE HERE MAYBE ITS BROKEN HERE IN SOME WAY?
+		
+		image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
 		obj1.add(put);
 		obj1.add(photosl);
-		obj2.add(stream);
+		obj2.add(wr);
 		obj3.add(headers);
 		new PhotoAirplay().execute();
 		
@@ -163,27 +167,34 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
 	@Override
 	protected Void doInBackground(Void... arg0) {
 		//BufferedReader reader=null;
-		ByteArrayOutputStream wr = new ByteArrayOutputStream(); 
+		
 		try
         { 	//String data = URLEncoder.encode("name", "UTF-8");
         	
             // Defined URL  where to send data
+            //URL url = new URL("http://192.168.1.101:7000"+photosl);
             URL url = new URL("http://192.168.1.101:7000"+photosl);
              Log.i("Whats the URL","http://192.168.1.101:7000"+photosl);
          // Send PUT data request
 
           HttpURLConnection conn =(HttpURLConnection) url.openConnection(); 
-          conn.setDoOutput(true);
           conn.setUseCaches(false);
+          conn.setDoOutput(true);
           conn.setRequestMethod(put);
+          if(headers.size()>0){
+        	  
+          
           conn.setRequestProperty("User-Agent","MediaControl/1.0");
           Object[] keys = headers.keySet().toArray();
           for (int i = 0; i < keys.length; i++) {
                   conn.setRequestProperty((String) keys[i],(String) headers.get(keys[i]));
           }
+          }
           if(wr!=null)
           {
         	  data = wr.toByteArray();
+        	  Log.i("Content Length","Not Null Yay!");
+        	  Log.i("Content Length",data.toString());
           }
           
           conn.setRequestProperty("Content-Length",""+data.length);
@@ -192,20 +203,32 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
           wr.flush(); 
       
           // Get the server response 
-           
-       // reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-       // StringBuilder sb = new StringBuilder();
-        //String line = null;
+          if (conn.getResponseCode() == 401) {
+         
+             
+                      throw new IOException("Incorrect password");
+              }
+          if(conn.getResponseCode()==200)
+          {
+        	  Log.v("HTTPResponse","Response code 200 OK");
+          }
+         
+          Log.v("HTTPResponse",conn.getResponseMessage());
+        
+        //StringBuilder sb = new StringBuilder();
+        /*String line;
         
         // Read Server Response
-       /* while((line = reader.readLine()) != null)
-            {
-                   // Append server response in string
-                   sb.append(line + "\n");
-            }
-            
-           */ 
-           
+        InputStream is = conn.getInputStream();
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                        
+                        StringBuffer response = new StringBuffer(); 
+                        while((line = rd.readLine()) != null) {
+                                response.append(line);
+                                response.append("\r\n");
+                        }
+                        rd.close();
+         Log.v("Apple-TV Response",response.toString());  */
         }
         catch(IOException ex)
         {
@@ -217,7 +240,7 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
             try
             {
  
-                //reader.close();
+                
             	wr.close();
             }
 
