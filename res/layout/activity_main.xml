@@ -27,13 +27,13 @@
 
         <fragment
             android:id="@+id/fragment_firstpane"
-            android:name="code.laerstudios.openairplay.FirstPane"
+            android:name="com.laer.easycast.FirstPane"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
         <fragment
             android:id="@+id/fragment_secondpane"
-            android:name="code.laerstudios.openairplay.SecondPane"
+            android:name="com.laer.easycast.SecondPane"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
        

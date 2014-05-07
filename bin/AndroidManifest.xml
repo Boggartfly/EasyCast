@@ -15,7 +15,7 @@
    limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="code.laerstudios.openairplay"
+    package="com.laer.easycast"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -35,7 +35,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="code.laerstudios.openairplay.MainActivity"
+            android:name="com.laer.easycast.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
