@@ -1,32 +1,17 @@
 /*
  * Copyright 2014 Parth Sane
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+   
  */
 package com.laer.easycast;
 
 //import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.laer.easycast.R;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -62,7 +47,7 @@ public class SecondPane extends ListFragment  {
     public static final String SLIDE_LEFT = "SlideLeft";
     public static final String SLIDE_RIGHT = "SlideRight";
     public static final String DISSOLVE = "Dissolve";
-    public byte[] data;
+    private byte[] data;
     public String recieved;
     
     
@@ -70,7 +55,7 @@ public class SecondPane extends ListFragment  {
 	String photosl="/photo";
 	Map<String, String> headers = new HashMap<String, String>();
 	ByteArrayOutputStream wr = new ByteArrayOutputStream(); 
-	
+	HttpURLConnection conn;
 	
 	
 	@Override
@@ -81,7 +66,7 @@ public class SecondPane extends ListFragment  {
         root= inflater.inflate(R.layout.secondlayout,container,false);
         setHasOptionsMenu(true);
         myViewGroup=container;
-       
+        
         cursor = getActivity().getContentResolver().query( MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
 				
 				projection, // Which columns to return
@@ -120,15 +105,12 @@ public class SecondPane extends ListFragment  {
 			// Get image filename
 			String imagePath = cursor.getString(columnIndex);
 			Bitmap image = BitmapFactory.decodeFile(imagePath);
-			try
-			{
+			
+			Log.i("ImagePath=",imagePath);
 			Log.d(TAG,"Image decoded");
 			photoRaw(image,NONE);
-			}
-			catch(IOException e)
-			{
-				e.printStackTrace();
-			}
+			
+			
 			// Use this path to do further processing, i.e. full screen display
 		}
 	});
@@ -141,7 +123,7 @@ public class SecondPane extends ListFragment  {
         return root;
     }
 
-public void photoRaw(Bitmap image, String transition) throws IOException {
+public void photoRaw(Bitmap image, String transition)  {
 		
 		Log.i("photoraw", "photoraw called");
 		
@@ -157,10 +139,7 @@ public void photoRaw(Bitmap image, String transition) throws IOException {
 		
 	}
 private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
-	 @Override
-	    protected void onPreExecute() {
-		
-	    }
+	 
 
 	
 
@@ -178,7 +157,7 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
              Log.i("Whats the URL",recieved+photosl);
          // Send PUT data request
 
-          HttpURLConnection conn =(HttpURLConnection) url.openConnection(); 
+          conn =(HttpURLConnection) url.openConnection(); 
           conn.setUseCaches(false);
           conn.setDoOutput(true);
           conn.setRequestMethod(put);
@@ -194,9 +173,10 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
           if(wr!=null)
           {
         	  data = wr.toByteArray();
-        	  Log.i("Content Length","Not Null Yay!");
-        	  Log.i("Content Length",data.toString());
+        	  Log.i("OutputStream","Not Null Yay!");
+        	  Log.i("ByteStringEquivalent",data.toString());
           }
+          
           else
           {
         	  Log.e("Output Stream","NULL!!");
@@ -245,8 +225,10 @@ private class PhotoAirplay extends AsyncTask<Void,Void,Void> {
             try
             {
  
-                
+                wr.reset();
             	wr.close();
+            	
+            	
             }
 
             catch(IOException ex) {
