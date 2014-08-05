@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 
     <string name="app_name">EasyCast</string>
@@ -9,5 +8,7 @@
     <string name="switch_router">Network On/Off</string>
     <string name="hello_world">Hello world!</string>
     <string name="select_a_media_item">Select a media item</string>
+    <string name="media_route_provider_service">EasyCast Media Service</string>
+    <string name="media_route_menu_title"></string>
 
 </resources>

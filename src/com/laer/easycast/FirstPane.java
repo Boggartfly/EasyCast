@@ -16,9 +16,6 @@
 
 package com.laer.easycast;
 
-
-
-import com.laer.easycast.R;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,47 +23,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-
-
-
-
-
 public class FirstPane extends Fragment {
-	
-    ViewGroup myViewGroup;
-    
-   
 
-    
+	ViewGroup myViewGroup;
 
-    @Override
+	@Override
 	public void onStart() {
-        super.onStart();
-        //new Thread(){public void run() {setUp();}}.start();
-        
-    }
+		super.onStart();
+		// new Thread(){public void run() {setUp();}}.start();
 
-    @Override
+	}
+
+	@Override
 	public void onStop() {
-    	
-    	super.onStop();
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = new View(getActivity());
-        root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        root= inflater.inflate(R.layout.firstlayout,container,false);
-        root.setBackgroundColor(Color.GRAY);
-        setHasOptionsMenu(true);
-        myViewGroup=container;
-        
-        
-        
-        return root;
-    }
 
+		super.onStop();
+	}
 
-    
-   
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View root = new View(getActivity());
+		root.setLayoutParams(new ViewGroup.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT));
+		root = inflater.inflate(R.layout.firstlayout, container, false);
+		root.setBackgroundColor(Color.GRAY);
+		setHasOptionsMenu(true);
+		myViewGroup = container;
+
+		return root;
+	}
+
 }
