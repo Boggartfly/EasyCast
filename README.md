@@ -6,6 +6,7 @@ My attempt at Airplaying content to an apple TV with an android smartphone.
 Airplay now WORKS with photos! More coming up ahead. 
 
 Copyright 2014 Parth Sane
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
