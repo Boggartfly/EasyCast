@@ -21,9 +21,6 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceListener;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -34,11 +31,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SlidingPaneLayout;
-import android.transition.Explode;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewAnimationUtils;
+
 import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
@@ -54,7 +51,7 @@ public class MainActivity extends FragmentActivity implements
 	private String type = "_airplay._tcp.local.";
 	private JmDNS jmdns = null;
 	private ServiceListener listener = null;
-	// private ServiceInfo serviceInfo;
+	
 	android.net.wifi.WifiManager.MulticastLock lock;
 	android.os.Handler handler = new android.os.Handler();
 	final static String TAG = "Open Airplay";
@@ -68,7 +65,7 @@ public class MainActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getWindow().setExitTransition(new Explode());
+		
 		View root = getLayoutInflater().inflate(R.layout.activity_main, null);
 		
 		setContentView(root);
@@ -263,8 +260,7 @@ public class MainActivity extends FragmentActivity implements
 							@Override
 							public void serviceResolved(ServiceEvent ev) {
 								buildURL("http://"
-										+ ev.getInfo().getHostAddress() + ":"
-										+ ev.getInfo().getPort());
+										+ ev.getInfo().getHostAddress());
 							}
 
 							@Override
@@ -304,10 +300,7 @@ public class MainActivity extends FragmentActivity implements
 			public void run() {
 				Toast.makeText(getApplicationContext(), "Apple TV Found!",
 						Toast.LENGTH_SHORT).show();
-				/*
-				 * TextView t = (TextView)findViewById(R.id.text);
-				 * t.setText(msg+"\n=== "+t.getText());
-				 */}
+				}
 		}, 1);
 
 		Log.i(TAG, " Apple TV Found!");
@@ -337,41 +330,5 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-	public void makeVisible(final View myView) {
-		// get the center for the clipping circle
-		int cx = (myView.getLeft() + myView.getRight()) / 2;
-		int cy = (myView.getTop() + myView.getBottom()) / 2;
-
-		// get the initial radius for the clipping circle
-		int initialRadius = myView.getWidth();
-
-		// create the animation (the final radius is zero)
-		ValueAnimator anim = ViewAnimationUtils.createCircularReveal(myView,
-				cx, cy, initialRadius, 0);
-
-		// make the view invisible when the animation is done
-		anim.addListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				super.onAnimationEnd(animation);
-				myView.setVisibility(View.INVISIBLE);
-			}
-		});
-	}
-
-	public void hideView(View myView) {
-
-		// get the center for the clipping circle
-		int cx = (myView.getLeft() + myView.getRight()) / 2;
-		int cy = (myView.getTop() + myView.getBottom()) / 2;
-
-		// get the final radius for the clipping circle
-		int finalRadius = myView.getWidth();
-
-		// create and start the animator for this view
-		// (the start radius is zero)
-		ValueAnimator anim = ViewAnimationUtils.createCircularReveal(myView,
-				cx, cy, 0, finalRadius);
-		anim.start();
-	}
+	
 }

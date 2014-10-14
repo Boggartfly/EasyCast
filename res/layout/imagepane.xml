@@ -22,7 +22,7 @@ See the License for the specific language governing permissions and
         android:id="@android:id/list"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:elevation="5dp" />
+         />
 
     <GridView
         android:id="@+id/gridView1"
@@ -32,5 +32,14 @@ See the License for the specific language governing permissions and
         android:gravity="center"
         android:numColumns="3" >
     </GridView>
+
+    <SurfaceView
+        android:id="@+id/surfaceView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@android:id/list"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="170dp"
+        android:visibility="invisible" />
 
 </RelativeLayout>

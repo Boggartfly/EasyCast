@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -55,11 +54,12 @@ public class VideoPane extends Fragment {
 	public static final String SLIDE_LEFT = "SlideLeft";
 	public static final String SLIDE_RIGHT = "SlideRight";
 	public static final String DISSOLVE = "Dissolve";
-	private byte[] data;
+	
 	public String recieved;
 	protected static final String TAG = "VideoPane";
 
-	String put = "PUT";
+	String videoPath;
+	String post = "POST";
 	String videosl = "/play";
 	Map<String, String> headers = new HashMap<String, String>();
 	ByteArrayOutputStream wr = new ByteArrayOutputStream();
@@ -119,12 +119,12 @@ public class VideoPane extends Fragment {
 				cursor.moveToPosition(position);
 
 				// Get image filename
-				String imagePath = cursor.getString(columnIndex);
+				videoPath = cursor.getString(columnIndex);
 				// Bitmap image = BitmapFactory.decodeFile(imagePath);
-
-				Log.i("VideoPath=", imagePath);
+				videoPath="http://"+Utils.getIPAddress(true)+videoPath;
+				Log.i("VideoPath=", videoPath);
 				Log.d(TAG, "Video decoded");
-				// videoRaw(image,NONE);
+				 videoRaw(NONE);
 
 				// Use this path to do further processing, i.e. full screen
 				// display
@@ -134,13 +134,13 @@ public class VideoPane extends Fragment {
 		return root;
 	}
 
-	public void videoRaw(Bitmap image, String transition) {
+	public void videoRaw(String transition) {
 
-		Log.i("photoraw", "photoraw called");
+		Log.i("videoraw", "videoraw called");
 
 		headers.put("X-Apple-Transition", transition);
 
-		image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
+		
 		MainActivity obj = (MainActivity) getActivity();
 
 		WifiManager wifi = (WifiManager) getActivity().getSystemService(
@@ -195,18 +195,22 @@ public class VideoPane extends Fragment {
 				MainActivity obj = (MainActivity) getActivity();
 				recieved = obj.URL;
 				// Defined URL where to send data
-				// URL url = new URL("http://192.168.1.101:7000"+videosl);
-				URL url = new URL(recieved + videosl);
+				
+				URL url = new URL(recieved+":7000" + videosl);
 				Log.i("Whats the URL", recieved + videosl);
 				// Send PUT data request
 
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setUseCaches(false);
 				conn.setDoOutput(true);
-				conn.setRequestMethod(put);
+				conn.setRequestMethod(post);
 				if (headers.size() > 0) {
 
 					conn.setRequestProperty("User-Agent", "MediaControl/1.0");
+					
+					conn.setRequestProperty("Content-Type", "text/parameters");
+					conn.setRequestProperty("Content-Location",videoPath);
+					conn.setRequestProperty("Start Position", "0");
 					Object[] keys = headers.keySet().toArray();
 					for (int i = 0; i < keys.length; i++) {
 						conn.setRequestProperty((String) keys[i],
@@ -214,16 +218,16 @@ public class VideoPane extends Fragment {
 					}
 				}
 				if (wr != null) {
-					data = wr.toByteArray();
+					
 					Log.i("OutputStream", "Not Null Yay!");
-					Log.i("ByteStringEquivalent", data.toString());
+					
 				}
 
 				else {
 					Log.e("Output Stream", "NULL!!");
 				}
 
-				conn.setRequestProperty("Content-Length", "" + data.length);
+				
 				conn.connect();
 				wr.writeTo(conn.getOutputStream());
 				wr.flush();
@@ -233,25 +237,13 @@ public class VideoPane extends Fragment {
 
 					throw new IOException("Incorrect password");
 				}
-				if (conn.getResponseCode() == 200) {
+				else if (conn.getResponseCode() == 200) {
 					Log.v("HTTPResponse", "Response code 200 OK");
 				}
-
+				else
 				Log.v("HTTPResponse", conn.getResponseMessage());
 
-				// StringBuilder sb = new StringBuilder();
-				/*
-				 * String line;
-				 * 
-				 * // Read Server Response InputStream is =
-				 * conn.getInputStream(); BufferedReader rd = new
-				 * BufferedReader(new InputStreamReader(is));
-				 * 
-				 * StringBuffer response = new StringBuffer(); while((line =
-				 * rd.readLine()) != null) { response.append(line);
-				 * response.append("\r\n"); } rd.close();
-				 * Log.v("Apple-TV Response",response.toString());
-				 */
+				
 			} catch (IOException ex) {
 				ex.printStackTrace();
 

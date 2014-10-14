@@ -19,10 +19,8 @@ See the License for the specific language governing permissions and
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="L"
-        android:targetSdkVersion="L"
-        
-	/>
+        android:minSdkVersion="16"
+        android:targetSdkVersion="20"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -48,15 +46,7 @@ See the License for the specific language governing permissions and
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".provider.EasyMediaRouteProviderService"
-            android:exported="false"
-            android:label="@string/media_route_provider_service"
-            android:process=":mrp" >
-            <intent-filter>
-                <action android:name="android.media.MediaRouteProviderService" />
-            </intent-filter>
-        </service>
+       
     </application>
 
 </manifest>

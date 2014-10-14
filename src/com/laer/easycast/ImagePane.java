@@ -199,7 +199,7 @@ public class ImagePane extends ListFragment {
 				recieved = obj.URL;
 				// Defined URL where to send data
 				// URL url = new URL("http://192.168.1.101:7000"+videosl);
-				URL url = new URL(recieved + photosl);
+				URL url = new URL(recieved+":7000" + photosl);
 				Log.i("Whats the URL", recieved + photosl);
 				// Send PUT data request
 
