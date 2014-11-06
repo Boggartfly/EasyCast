@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="C:\Users\Parth\workspace\EasyCast\res" >
+            <file
+                name="background_tab"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable\background_tab.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-hdpi\ic_launcher.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher_actionbar"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-hdpi\ic_launcher_actionbar.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="lightbulb"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-hdpi\lightbulb.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="lightbulb_off"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-hdpi\lightbulb_off.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="openairplay"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-hdpi\openairplay.jpg"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-mdpi\ic_launcher.png"
+                qualifiers="mdpi-v4"
+                type="drawable" />
+            <file
+                name="openairplay"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-mdpi\openairplay.jpg"
+                qualifiers="mdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-xhdpi\ic_launcher.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="openairplay"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-xhdpi\openairplay.jpg"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="applelogo"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-xxhdpi\applelogo.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="C:\Users\Parth\workspace\EasyCast\res\drawable-xxhdpi\ic_launcher.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="activity_main"
+                path="C:\Users\Parth\workspace\EasyCast\res\layout\activity_main.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="firstlayout"
+                path="C:\Users\Parth\workspace\EasyCast\res\layout\firstlayout.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="imagepane"
+                path="C:\Users\Parth\workspace\EasyCast\res\layout\imagepane.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="main"
+                path="C:\Users\Parth\workspace\EasyCast\res\layout\main.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="airplay"
+                path="C:\Users\Parth\workspace\EasyCast\res\menu\airplay.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="main"
+                path="C:\Users\Parth\workspace\EasyCast\res\menu\main.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values\attrs.xml"
+                qualifiers="" >
+                <declare-styleable name="PagerSlidingTabStrip" >
+                    <attr
+                        name="pstsIndicatorColor"
+                        format="color" />
+                    <attr
+                        name="pstsUnderlineColor"
+                        format="color" />
+                    <attr
+                        name="pstsDividerColor"
+                        format="color" />
+                    <attr
+                        name="pstsIndicatorHeight"
+                        format="dimension" />
+                    <attr
+                        name="pstsUnderlineHeight"
+                        format="dimension" />
+                    <attr
+                        name="pstsDividerPadding"
+                        format="dimension" />
+                    <attr
+                        name="pstsTabPaddingLeftRight"
+                        format="dimension" />
+                    <attr
+                        name="pstsScrollOffset"
+                        format="dimension" />
+                    <attr
+                        name="pstsTabBackground"
+                        format="reference" />
+                    <attr
+                        name="pstsShouldExpand"
+                        format="boolean" />
+                    <attr
+                        name="pstsTextAllCaps"
+                        format="boolean" />
+                </declare-styleable>
+            </file>
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values\colors.xml"
+                qualifiers="" >
+                <color name="accent" >#f9bdbb
+                </color>
+                <color name="primary" >#e51c23
+                </color>
+                <color name="background_tab_pressed" >#6633B5E5
+                </color>
+                <color name="primary_dark" >#b0120a
+                </color>
+            </file>
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values\dimens.xml"
+                qualifiers="" >
+                <dimen name="activity_horizontal_margin" >16dp
+                </dimen>
+                <dimen name="activity_vertical_margin" >16dp
+                </dimen>
+            </file>
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values\strings.xml"
+                qualifiers="" >
+                <string name="select_a_media_item" >Select a media item
+                </string>
+                <string name="action_settings" >Settings
+                </string>
+                <string name="app_name" >EasyCast
+                </string>
+                <string name="search_lan" >Search LAN
+                </string>
+                <string name="media_route_provider_service" >EasyCast Media Service
+                </string>
+                <string name="hello_world" >Hello world!
+                </string>
+                <string name="switch_router" >Network On/Off
+                </string>
+                <string name="media_route_menu_title" ></string>
+                <string name="hello" >Hello world!
+                </string>
+            </file>
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values\styles.xml"
+                qualifiers="" >
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Holo" >
+                </style>
+            </file>
+            <file
+                path="C:\Users\Parth\workspace\EasyCast\res\values-sw720dp-land\dimens.xml"
+                qualifiers="sw720dp-land-v13" >
+                <dimen name="activity_horizontal_margin" >128dp
+                </dimen>
+            </file>
+        </source>
+        <source path="C:\Users\Parth\workspace\EasyCast\build\generated\res\rs\debug" />
+        <source path="C:\Users\Parth\workspace\EasyCast\build\generated\res\generated\debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="C:\Users\Parth\workspace\EasyCast\build-types\debug\res" />
+    </dataSet>
+
+</merger>

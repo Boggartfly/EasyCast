@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="C:\Users\Parth\workspace\EasyCast\build\intermediates\pre-dexed\debug\jmdns-99cf54dfba1124a136e67efa2a115fa1470aca82.jar"
+        jar="C:\Users\Parth\workspace\EasyCast\libs\jmdns.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="bcca119a5bab359a005e426f9e833627e6fd4c66"/>
+    <item
+        dex="C:\Users\Parth\workspace\EasyCast\build\intermediates\pre-dexed\debug\android-support-v4-1c16149e7587a058720cd96ed17b11861938272a.jar"
+        jar="C:\Users\Parth\workspace\EasyCast\libs\android-support-v4.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="5896b0a4e377ac4242eb2bc785220c1c4fc052f4"/>
+
+</pre-dex-items>

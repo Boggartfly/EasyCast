@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- /*
+<?xml version="1.0" encoding="utf-8"?><!-- /*
  * Copyright 2014 Parth Sane
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,8 +13,9 @@ See the License for the specific language governing permissions and
    limitations under the License.
  */-->
 <resources>
- <color name="primary">#e51c23</color>
- <color name="primary_dark">#b0120a</color>
- <color name="accent">#f9bdbb</color>
- 
+    <color name="primary">#e51c23</color>
+    <color name="primary_dark">#b0120a</color>
+    <color name="accent">#f9bdbb</color>
+    <color name="background_tab_pressed">#6633B5E5</color>
+
 </resources>

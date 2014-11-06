@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- /*
+<?xml version="1.0" encoding="utf-8"?><!-- /*
  * Copyright 2014 Parth Sane
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,13 +15,13 @@ See the License for the specific language governing permissions and
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center" >
+    android:gravity="center">
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="30dp"
         android:layout_height="30dp"
-         />
+        android:elevation="5dp" />
 
     <GridView
         android:id="@+id/gridView1"
@@ -30,16 +29,6 @@ See the License for the specific language governing permissions and
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:numColumns="3" >
-    </GridView>
-
-    <SurfaceView
-        android:id="@+id/surfaceView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@android:id/list"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="170dp"
-        android:visibility="invisible" />
+        android:numColumns="3"></GridView>
 
 </RelativeLayout>

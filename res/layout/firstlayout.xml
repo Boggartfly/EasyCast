@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
  */-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/applelogo"
@@ -32,8 +32,8 @@ See the License for the specific language governing permissions and
         android:layout_alignBottom="@+id/applelogo"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="26dp"
+        android:elevation="2dp"
         android:text="Apple TV"
-        android:textSize="20dp" 
-        />
+        android:textSize="20dp" />
 
 </RelativeLayout>

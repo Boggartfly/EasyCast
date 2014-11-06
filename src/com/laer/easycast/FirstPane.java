@@ -23,34 +23,34 @@ import android.view.ViewGroup;
 
 public class FirstPane extends Fragment {
 
-	ViewGroup myViewGroup;
+    ViewGroup myViewGroup;
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		// new Thread(){public void run() {setUp();}}.start();
+    @Override
+    public void onStart() {
+        super.onStart();
+        // new Thread(){public void run() {setUp();}}.start();
 
-	}
+    }
 
-	@Override
-	public void onStop() {
+    @Override
+    public void onStop() {
 
-		super.onStop();
-	}
+        super.onStop();
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View root = new View(getActivity());
-		root.setLayoutParams(new ViewGroup.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-		root = inflater.inflate(R.layout.firstlayout, container, false);
-		root.setBackgroundColor(Color.GRAY);
-		setHasOptionsMenu(true);
-		myViewGroup = container;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View root = new View(getActivity());
+        root.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        root = inflater.inflate(R.layout.firstlayout, container, false);
+        root.setBackgroundColor(Color.GRAY);
+        setHasOptionsMenu(true);
+        myViewGroup = container;
 
-		return root;
-	}
+        return root;
+    }
 
 }

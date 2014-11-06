@@ -15,14 +15,6 @@ See the License for the specific language governing permissions and
 package com.laer.easycast;
 
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,6 +29,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.support.v4.app.ListFragment;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,320 +41,353 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ImagePane extends ListFragment {
 
-	protected static final String TAG = "ImagePane";
-	ViewGroup myViewGroup;
+    public static final String NONE = "None";
+    public static final String SLIDE_LEFT = "SlideLeft";
+    public static final String SLIDE_RIGHT = "SlideRight";
+    public static final String DISSOLVE = "Dissolve";
+    protected static final String TAG = "ImagePane";
+    // Get max available VM memory, exceeding this amount will throw an
+    // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+    // int in its constructor.
+    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    // Use 1/8th of the available memory for this memory cache.
+    final int cacheSize = maxMemory / 8;
+    public String recieved;
+    ViewGroup myViewGroup;
+    String[] projection = {MediaStore.Images.Thumbnails._ID};
+    BufferedInputStream in;
+    String put = "PUT";
+    String photosl = "/photo";
+    Map<String, String> headers = new HashMap<String, String>();
+    ByteArrayOutputStream wr = new ByteArrayOutputStream();
+    HttpURLConnection conn;
+    private LruCache<String, Bitmap> mMemoryCache;
+    private Cursor cursor;
+    private int columnIndex;
+    private byte[] data;
 
-	String[] projection = { MediaStore.Images.Thumbnails._ID };
-	private Cursor cursor;
-	private int columnIndex;
-	public static final String NONE = "None";
-	public static final String SLIDE_LEFT = "SlideLeft";
-	public static final String SLIDE_RIGHT = "SlideRight";
-	public static final String DISSOLVE = "Dissolve";
-	private byte[] data;
-	public String recieved;
-	BufferedInputStream in;
-	String put = "PUT";
-	String photosl = "/photo";
-	Map<String, String> headers = new HashMap<String, String>();
-	ByteArrayOutputStream wr = new ByteArrayOutputStream();
-	HttpURLConnection conn;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-		View root = new View(getActivity());
-		root.setLayoutParams(new ViewGroup.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-		root.setBackgroundColor(Color.WHITE);
-		root = inflater.inflate(R.layout.imagepane, container, false);
-		setHasOptionsMenu(true);
-		myViewGroup = container;
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 8;
 
-		cursor = getActivity().getContentResolver().query(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
 
-				projection, // Which columns to return
+    }
 
-				null, // Return all rows
 
-				null, null);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		// Get the column index of the Thumbnails Image ID
+        View root = new View(getActivity());
+        root.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        root.setBackgroundColor(Color.WHITE);
+        root = inflater.inflate(R.layout.imagepane, container, false);
+        setHasOptionsMenu(true);
+        myViewGroup = container;
 
-		columnIndex = cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+        cursor = getActivity().getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 
-		GridView gridView = (GridView) root.findViewById(R.id.gridView1);
+                projection, // Which columns to return
 
-		gridView.setAdapter(new ImageAdapter(getActivity()));
+                null, // Return all rows
 
-		gridView.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				String[] projection = { MediaStore.Images.Media.DATA };
+                null, null);
 
-				cursor = getActivity().getContentResolver().query(
-						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        // Get the column index of the Thumbnails Image ID
 
-						projection, // Which columns to return
+        columnIndex = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media._ID);
 
-						null, // Return all rows
+        GridView gridView = (GridView) root.findViewById(R.id.gridView1);
 
-						null,
+        gridView.setAdapter(new ImageAdapter(getActivity()));
 
-						null);
+        gridView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                String[] projection = {MediaStore.Images.Media.DATA};
 
-				columnIndex = cursor
-						.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor = getActivity().getContentResolver().query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 
-				cursor.moveToPosition(position);
+                        projection, // Which columns to return
 
-				// Get image filename
-				String imagePath = cursor.getString(columnIndex);
-				Bitmap image = BitmapFactory.decodeFile(imagePath);
+                        null, // Return all rows
 
-				Log.i("ImagePath=", imagePath);
-				Log.d(TAG, "Image decoded");
-				photoRaw(image, NONE);
+                        null,
 
-				// Use this path to do further processing, i.e. full screen
-				// display
-			}
-		});
+                        null);
 
-		return root;
-	}
+                columnIndex = cursor
+                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
-	public void photoRaw(Bitmap image, String transition) {
+                cursor.moveToPosition(position);
 
-		Log.i("photoraw", "photoraw called");
+                // Get image filename
+                String imagePath = cursor.getString(columnIndex);
+                Bitmap image = BitmapFactory.decodeFile(imagePath);
 
-		headers.put("X-Apple-Transition", transition);
+                Log.i("ImagePath=", imagePath);
+                Log.d(TAG, "Image decoded");
+                photoRaw(image, NONE);
 
-		image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
-		MainActivity obj = (MainActivity) getActivity();
+                // Use this path to do further processing, i.e. full screen
+                // display
+            }
+        });
 
-		WifiManager wifi = (WifiManager) getActivity().getSystemService(
-				Context.WIFI_SERVICE);
-		if (obj.URL != null) {
-			new PhotoAirplay().execute();
-		} else if (obj.URL == null || wifi.isWifiEnabled() != true) {
-			WiFiOptions();
+        return root;
+    }
 
-			if (obj.URL == null) {
-				Toast.makeText(getActivity(), "No compatible devices found",
-						Toast.LENGTH_SHORT).show();
-			}
+    public void photoRaw(Bitmap image, String transition) {
 
-		}
+        Log.i("photoraw", "photoraw called");
 
-	}
+        headers.put("X-Apple-Transition", transition);
 
-	public void WiFiOptions() {
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
-					// Yes button clicked
-					WifiManager wifiManager = (WifiManager) getActivity()
-							.getSystemService(Context.WIFI_SERVICE);
-					wifiManager.setWifiEnabled(true);
-					break;
+        image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
+        MainActivity obj = (MainActivity) getActivity();
 
-				case DialogInterface.BUTTON_NEGATIVE:
-					// No button clicked
-					break;
-				}
-			}
-		};
+        WifiManager wifi = (WifiManager) getActivity().getSystemService(
+                Context.WIFI_SERVICE);
+        if (obj.URL != null) {
+            new PhotoAirplay().execute();
+        } else if (obj.URL == null || wifi.isWifiEnabled() != true) {
+            WiFiOptions();
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(
-				"WiFi needs to be on for streaming to a device. Would you like to turn it on?")
-				.setPositiveButton("Yes", dialogClickListener)
-				.setNegativeButton("No", dialogClickListener).show();
-	}
+            if (obj.URL == null) {
+                Toast.makeText(getActivity(), "No compatible devices found",
+                        Toast.LENGTH_SHORT).show();
+            }
 
-	private class PhotoAirplay extends AsyncTask<Void, Void, Void> {
+        }
 
-		@Override
-		protected Void doInBackground(Void... arg0) {
-			// BufferedReader reader=null;
+    }
 
-			try {
-				MainActivity obj = (MainActivity) getActivity();
-				recieved = obj.URL;
-				// Defined URL where to send data
-				// URL url = new URL("http://192.168.1.101:7000"+videosl);
-				URL url = new URL(recieved+":7000" + photosl);
-				Log.i("Whats the URL", recieved + photosl);
-				// Send PUT data request
+    public void WiFiOptions() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        // Yes button clicked
+                        WifiManager wifiManager = (WifiManager) getActivity()
+                                .getSystemService(Context.WIFI_SERVICE);
+                        wifiManager.setWifiEnabled(true);
+                        break;
 
-				conn = (HttpURLConnection) url.openConnection();
-				conn.setUseCaches(false);
-				conn.setDoOutput(true);
-				conn.setRequestMethod(put);
-				if (headers.size() > 0) {
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // No button clicked
+                        break;
+                }
+            }
+        };
 
-					conn.setRequestProperty("User-Agent", "MediaControl/1.0");
-					Object[] keys = headers.keySet().toArray();
-					for (int i = 0; i < keys.length; i++) {
-						conn.setRequestProperty((String) keys[i],
-								(String) headers.get(keys[i]));
-					}
-				}
-				if (wr != null) {
-					data = wr.toByteArray();
-					Log.i("OutputStream", "Not Null Yay!");
-					Log.i("ByteStringEquivalent", data.toString());
-				}
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(
+                "WiFi needs to be on for streaming to a device. Would you like to turn it on?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
 
-				else {
-					Log.e("Output Stream", "NULL!!");
-				}
+    /**
+     * Async task for loading the images from the SD card.
+     */
+    public Uri downScale(Uri uri, Context inContext) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 4;
+        String path = new String();
+        try {
+            in = new BufferedInputStream(getActivity().getContentResolver().openInputStream(uri));
+            Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
 
-				conn.setRequestProperty("Content-Length", "" + data.length);
-				conn.connect();
-				wr.writeTo(conn.getOutputStream());
-				wr.flush();
+            path = Images.Media.insertImage(inContext.getContentResolver(), bitmap, "Title", null);
+            in.reset();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-				// Get the server response
-				if (conn.getResponseCode() == 401) {
 
-					throw new IOException("Incorrect password");
-				}
-				if (conn.getResponseCode() == 200) {
-					Log.v("HTTPResponse", "Response code 200 OK");
-				}
+        return Uri.parse(path);
+    }
 
-				Log.v("HTTPResponse", conn.getResponseMessage());
+    private class PhotoAirplay extends AsyncTask<Void, Void, Void> {
 
-				// StringBuilder sb = new StringBuilder();
-				/*
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            // BufferedReader reader=null;
+
+            try {
+                MainActivity obj = (MainActivity) getActivity();
+                recieved = obj.URL;
+                // Defined URL where to send data
+                // URL url = new URL("http://192.168.1.101:7000"+videosl);
+                URL url = new URL(recieved + photosl);
+                Log.i("Whats the URL", recieved + photosl);
+                // Send PUT data request
+
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setUseCaches(false);
+                conn.setDoOutput(true);
+                conn.setRequestMethod(put);
+                if (headers.size() > 0) {
+
+                    conn.setRequestProperty("User-Agent", "MediaControl/1.0");
+                    Object[] keys = headers.keySet().toArray();
+                    for (int i = 0; i < keys.length; i++) {
+                        conn.setRequestProperty((String) keys[i],
+                                (String) headers.get(keys[i]));
+                    }
+                }
+                if (wr != null) {
+                    data = wr.toByteArray();
+                    Log.i("OutputStream", "Not Null Yay!");
+                    Log.i("ByteStringEquivalent", data.toString());
+                } else {
+                    Log.e("Output Stream", "NULL!!");
+                }
+
+                conn.setRequestProperty("Content-Length", "" + data.length);
+                conn.connect();
+                wr.writeTo(conn.getOutputStream());
+                wr.flush();
+
+                // Get the server response
+                if (conn.getResponseCode() == 401) {
+
+                    throw new IOException("Incorrect password");
+                }
+                if (conn.getResponseCode() == 200) {
+                    Log.v("HTTPResponse", "Response code 200 OK");
+                }
+
+                Log.v("HTTPResponse", conn.getResponseMessage());
+
+                // StringBuilder sb = new StringBuilder();
+                /*
 				 * String line;
-				 * 
+				 *
 				 * // Read Server Response InputStream is =
 				 * conn.getInputStream(); BufferedReader rd = new
 				 * BufferedReader(new InputStreamReader(is));
-				 * 
+				 *
 				 * StringBuffer response = new StringBuffer(); while((line =
 				 * rd.readLine()) != null) { response.append(line);
 				 * response.append("\r\n"); } rd.close();
 				 * Log.v("Apple-TV Response",response.toString());
 				 */
-			} catch (IOException ex) {
-				ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
 
-			} finally {
-				try {
+            } finally {
+                try {
 
-					wr.reset();
-					wr.close();
+                    wr.reset();
+                    wr.close();
 
-				}
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return null;
 
-				catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-			return null;
+            // Show response on activity
 
-			// Show response on activity
+        }
 
-		}
+    }
 
-	}
+    private class ImageAdapter extends BaseAdapter {
 
-	private class ImageAdapter extends BaseAdapter {
+        private Context context;
 
-		private Context context;
+        public ImageAdapter(Context localContext) {
 
-		public ImageAdapter(Context localContext) {
+            context = localContext;
 
-			context = localContext;
+        }
 
-		}
+        public int getCount() {
 
-		public int getCount() {
+            return cursor.getCount();
 
-			return cursor.getCount();
+        }
 
-		}
+        public Object getItem(int position) {
 
-		public Object getItem(int position) {
+            return position;
 
-			return position;
+        }
 
-		}
+        public long getItemId(int position) {
 
-		public long getItemId(int position) {
+            return position;
 
-			return position;
+        }
 
-		}
+        public View getView(int position, View convertView, ViewGroup parent) {
 
-		public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView picturesView;
+            if (convertView == null) {
 
-			ImageView picturesView;
-			if (convertView == null) {
+                picturesView = new ImageView(context);
 
-				picturesView = new ImageView(context);
+                // Move cursor to current position
 
-				// Move cursor to current position
+                cursor.moveToPosition(position);
 
-				cursor.moveToPosition(position);
+                // Get the current value for the requested column
+                int imageID = cursor.getInt(columnIndex);
 
-				// Get the current value for the requested column
-				int imageID = cursor.getInt(columnIndex);
+                // Set the content of the image based on the provided URI
 
-				// Set the content of the image based on the provided URI
+                picturesView.setImageURI(downScale(Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + imageID), getActivity()));
 
-				picturesView.setImageURI(downScale(Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ""+ imageID), getActivity()));
+                picturesView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-				picturesView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                picturesView.setPadding(8, 8, 8, 8);
 
-				picturesView.setPadding(8, 8, 8, 8);
+                picturesView
+                        .setLayoutParams(new GridView.LayoutParams(250, 250));
 
-				picturesView
-						.setLayoutParams(new GridView.LayoutParams(250, 250));
+            } else {
 
-			}
+                picturesView = (ImageView) convertView;
 
-			else {
+            }
 
-				picturesView = (ImageView) convertView;
+            return picturesView;
 
-			}
+        }
 
-			return picturesView;
-
-		}
-
-	}
-	/**
-	 * Async task for loading the images from the SD card.
-	 */
-public Uri downScale(Uri uri,Context inContext){
-	BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inSampleSize = 4;
-    String path=new String();
-	try {
-		in = new BufferedInputStream(getActivity().getContentResolver().openInputStream(uri));
-		Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
-		path = Images.Media.insertImage(inContext.getContentResolver(), bitmap, "Title", null);
-		in.reset();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-    
-    
-	return Uri.parse(path);
-}
+    }
 }
