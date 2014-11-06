@@ -1,9 +1,10 @@
-OpenAirplay
+EasyCast
 ===========
 
-My attempt at Airplaying content to an apple TV with an android smartphone.
+My attempt at Airplaying content to an apple TV with an android smartphone. 
 
 Airplay now WORKS with photos! More coming up ahead. 
+It's open source software. Feel free to use it under below mentioned terms!.
 
 Copyright 2014 Parth Sane
 
