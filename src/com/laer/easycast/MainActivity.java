@@ -38,12 +38,12 @@ public class MainActivity extends FragmentActivity {
 
 
     final static String TAG = "Open Airplay";
+    final static private String type = "_airplay._tcp.local.";
     public String URL;
     // private ServiceInfo serviceInfo;
     android.net.wifi.WifiManager.MulticastLock lock;
     android.os.Handler handler = new android.os.Handler();
     boolean isfound = false;
-    private String type = "_airplay._tcp.local.";
     private JmDNS jmdns = null;
     private ServiceListener listener = null;
 
@@ -186,7 +186,7 @@ public class MainActivity extends FragmentActivity {
                 Toast.makeText(getApplicationContext(), "Apple TV Found!",
                         Toast.LENGTH_SHORT).show();
                 /*
-				 * TextView t = (TextView)findViewById(R.id.text);
+                 * TextView t = (TextView)findViewById(R.id.text);
 				 * t.setText(msg+"\n=== "+t.getText());
 				 */
             }

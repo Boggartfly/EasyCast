@@ -10,6 +10,7 @@ apply plugin: 'android'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
+    compile files('libs/thumbnailator-0.4.7-all.jar')
 }
 
 android {

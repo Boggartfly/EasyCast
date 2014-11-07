@@ -238,7 +238,7 @@ public class VideoPane extends Fragment {
 
                 // StringBuilder sb = new StringBuilder();
                 /*
-				 * String line;
+                 * String line;
 				 * 
 				 * // Read Server Response InputStream is =
 				 * conn.getInputStream(); BufferedReader rd = new

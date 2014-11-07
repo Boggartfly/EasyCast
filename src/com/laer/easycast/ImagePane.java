@@ -18,17 +18,21 @@ package com.laer.easycast;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,9 +47,13 @@ import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,23 +70,54 @@ public class ImagePane extends ListFragment {
     final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
     // Use 1/8th of the available memory for this memory cache.
     final int cacheSize = maxMemory / 8;
+    private final String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
     public String recieved;
     ViewGroup myViewGroup;
-    String[] projection = {MediaStore.Images.Thumbnails._ID};
-    BufferedInputStream in;
     String put = "PUT";
     String photosl = "/photo";
     Map<String, String> headers = new HashMap<String, String>();
     ByteArrayOutputStream wr = new ByteArrayOutputStream();
     HttpURLConnection conn;
+    Bitmap mPlaceHolderBitmap;
+    int pos;
     private LruCache<String, Bitmap> mMemoryCache;
     private Cursor cursor;
     private int columnIndex;
     private byte[] data;
 
+    public static boolean cancelPotentialWork(int data, ImageView imageView) {
+        final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+        if (bitmapWorkerTask != null) {
+            final int bitmapData = bitmapWorkerTask.imageID;
+            // If bitmapData is not yet set or it differs from the new data
+            if (bitmapData == 0 || bitmapData != data) {
+                // Cancel previous task
+                bitmapWorkerTask.cancel(true);
+            } else {
+                // The same work is already in progress
+                return false;
+            }
+        }
+        // No task associated with the ImageView, or an existing task was cancelled
+        return true;
+    }
+
+    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+        if (imageView != null) {
+            final Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof AsyncDrawable) {
+                final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+                return asyncDrawable.getBitmapWorkerTask();
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        super.onCreate(savedInstanceState);
+        mPlaceHolderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading);
         // Get max available VM memory, exceeding this amount will throw an
         // OutOfMemory exception. Stored in kilobytes as LruCache takes an
         // int in its constructor.
@@ -97,7 +136,6 @@ public class ImagePane extends ListFragment {
         };
 
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,37 +157,24 @@ public class ImagePane extends ListFragment {
 
                 null, // Return all rows
 
-                null, null);
+                null,
 
-        // Get the column index of the Thumbnails Image ID
-
-        columnIndex = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                MediaStore.Images.Media.DEFAULT_SORT_ORDER);
 
         GridView gridView = (GridView) root.findViewById(R.id.gridView1);
 
         gridView.setAdapter(new ImageAdapter(getActivity()));
 
+
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                String[] projection = {MediaStore.Images.Media.DATA};
 
-                cursor = getActivity().getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-
-                        projection, // Which columns to return
-
-                        null, // Return all rows
-
-                        null,
-
-                        null);
 
                 columnIndex = cursor
                         .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
                 cursor.moveToPosition(position);
+
 
                 // Get image filename
                 String imagePath = cursor.getString(columnIndex);
@@ -174,13 +199,12 @@ public class ImagePane extends ListFragment {
         headers.put("X-Apple-Transition", transition);
 
         image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
-        MainActivity obj = (MainActivity) getActivity();
-
+        MainActivity obj = new MainActivity();
         WifiManager wifi = (WifiManager) getActivity().getSystemService(
                 Context.WIFI_SERVICE);
         if (obj.URL != null) {
             new PhotoAirplay().execute();
-        } else if (obj.URL == null || wifi.isWifiEnabled() != true) {
+        } else if (obj.URL == null && !wifi.isWifiEnabled()) {
             WiFiOptions();
 
             if (obj.URL == null) {
@@ -218,26 +242,93 @@ public class ImagePane extends ListFragment {
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+
+        //This method was deprecated in API level 11
+        //Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+
+        CursorLoader cursorLoader = new CursorLoader(
+                getActivity(),
+                contentUri, proj, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
+
+        int column_index =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
     /**
      * Async task for loading the images from the SD card.
      */
-    public Uri downScale(Uri uri, Context inContext) {
+    public Uri downScale(Uri uri) {
+
+        BufferedInputStream in;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 4;
-        String path = new String();
-        try {
-            in = new BufferedInputStream(getActivity().getContentResolver().openInputStream(uri));
-            Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            path = Images.Media.insertImage(inContext.getContentResolver(), bitmap, "Title", null);
-            in.reset();
+        Cursor cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String filePath = cursor.getString(columnIndex);
+        cursor.close();
+        Bitmap b = BitmapFactory.decodeFile(filePath, options);
+        File tempdir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/EasyCast/");
+        tempdir.mkdirs();
+        File temp = new File(tempdir, "temp.png");
+        if (temp.exists()) {
+            temp.delete();
+        }
+        try {
+
+            FileOutputStream out = new FileOutputStream(temp);
+            b.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.flush();
+            out.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return Uri.parse(temp.getPath());
+    }
 
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
 
-        return Uri.parse(path);
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
+    public void loadBitmap(int resId, ImageView imageView) {
+        if (cancelPotentialWork(resId, imageView)) {
+            final BitmapWorkerTask task = new BitmapWorkerTask(resId, imageView);
+            final AsyncDrawable asyncDrawable =
+                    new AsyncDrawable(getResources(), mPlaceHolderBitmap, task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute(resId);
+
+        }
+    }
+
+    static class AsyncDrawable extends BitmapDrawable {
+        private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
+
+        public AsyncDrawable(Resources res, Bitmap bitmap,
+                             BitmapWorkerTask bitmapWorkerTask) {
+            super(res, bitmap);
+            bitmapWorkerTaskReference =
+                    new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+        }
+
+        public BitmapWorkerTask getBitmapWorkerTask() {
+
+            return bitmapWorkerTaskReference.get();
+        }
     }
 
     private class PhotoAirplay extends AsyncTask<Void, Void, Void> {
@@ -294,7 +385,7 @@ public class ImagePane extends ListFragment {
 
                 // StringBuilder sb = new StringBuilder();
                 /*
-				 * String line;
+                 * String line;
 				 *
 				 * // Read Server Response InputStream is =
 				 * conn.getInputStream(); BufferedReader rd = new
@@ -328,6 +419,7 @@ public class ImagePane extends ListFragment {
 
     private class ImageAdapter extends BaseAdapter {
 
+        ArrayList<String> itemList = new ArrayList<String>();
         private Context context;
 
         public ImageAdapter(Context localContext) {
@@ -362,15 +454,24 @@ public class ImagePane extends ListFragment {
                 picturesView = new ImageView(context);
 
                 // Move cursor to current position
+                cursor = getActivity().getContentResolver().query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+
+                        projection, // Which columns to return
+
+                        null, // Return all rows
+
+                        null,
+
+                        MediaStore.Images.Media.DEFAULT_SORT_ORDER);
 
                 cursor.moveToPosition(position);
 
                 // Get the current value for the requested column
                 int imageID = cursor.getInt(columnIndex);
 
-                // Set the content of the image based on the provided URI
 
-                picturesView.setImageURI(downScale(Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + imageID), getActivity()));
+                loadBitmap(imageID, picturesView);
 
                 picturesView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -388,6 +489,45 @@ public class ImagePane extends ListFragment {
             return picturesView;
 
         }
+
+
+    }
+
+    class BitmapWorkerTask extends AsyncTask<Integer, Void, Uri> {
+        private final WeakReference<ImageView> imageViewReference;
+        private int imageID = 0;
+
+        public BitmapWorkerTask(int imageID, ImageView imageView) {
+            // Use a WeakReference to ensure the ImageView can be garbage collected
+            imageViewReference = new WeakReference<ImageView>(imageView);
+            this.imageID = imageID;
+        }
+
+        // Decode image in background.
+        @Override
+        protected Uri doInBackground(Integer... params) {
+
+            return downScale(Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + imageID));
+        }
+
+        // Once complete, see if ImageView is still around and set bitmap.
+        @Override
+        protected void onPostExecute(Uri uri) {
+            if (isCancelled()) {
+                uri = null;
+            }
+            if (imageViewReference != null && uri != null) {
+                final ImageView imageView = imageViewReference.get();
+                final BitmapWorkerTask bitmapWorkerTask =
+                        getBitmapWorkerTask(imageView);
+                if (this == bitmapWorkerTask && imageView != null) {
+                    imageView.setImageURI(uri);
+
+
+                }
+            }
+        }
+
 
     }
 }
