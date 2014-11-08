@@ -199,7 +199,7 @@ public class ImagePane extends ListFragment {
         headers.put("X-Apple-Transition", transition);
 
         image.compress(Bitmap.CompressFormat.JPEG, 100, wr);
-        MainActivity obj = new MainActivity();
+        MainActivity obj = (MainActivity) getActivity();
         WifiManager wifi = (WifiManager) getActivity().getSystemService(
                 Context.WIFI_SERVICE);
         if (obj.URL != null) {
