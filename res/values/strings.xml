@@ -23,5 +23,7 @@ See the License for the specific language governing permissions and
     <string name="select_a_media_item">Select a media item</string>
     <string name="media_route_provider_service">EasyCast Media Service</string>
     <string name="media_route_menu_title"></string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 
 </resources>

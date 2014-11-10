@@ -237,7 +237,7 @@ public class ImagePane extends ListFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(
-                "WiFi needs to be on for streaming to a device. Would you like to turn it on?")
+                "WiFi needs to be on for com.laer.easycast.streaming to a device. Would you like to turn it on?")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }

@@ -155,7 +155,9 @@ containing a value of this type.
         public static final int media_route_provider_service=0x7f060005;
         public static final int search_lan=0x7f060006;
         public static final int select_a_media_item=0x7f060007;
-        public static final int switch_router=0x7f060008;
+        public static final int start=0x7f060008;
+        public static final int stop=0x7f060009;
+        public static final int switch_router=0x7f06000a;
     }
     public static final class style {
         public static final int AppTheme=0x7f070000;

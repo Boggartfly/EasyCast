@@ -29,6 +29,7 @@ See the License for the specific language governing permissions and
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:numColumns="3"></GridView>
+        android:numColumns="3" />
+
 
 </RelativeLayout>
